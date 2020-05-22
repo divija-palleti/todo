@@ -1,22 +1,27 @@
 class TodoItemsController < ApplicationController
     before_action :set_todo_list
     before_action :set_todo_item, except: [:create]
-   def create
-    @todo_item = @todo_list.todo_items.create(todo_item_params)
-    redirect_to @todo_list
-   end
 
-   def destroy
+   def create
+    @todo_item = @todo_list.todo_items.new(todo_item_params)
     
+        if @todo_item.save
+          redirect_to @todo_list
+        else
+          render :new
+          
+        end
+   end
     
+
+    def destroy
     if(@todo_item.destroy)
         flash[:success] ="Todo item deletion success "
     else
         flash[:error] = "Item couldn't be deleted"
     end
-    
     redirect_to @todo_list
-   end
+    end
 
    def complete
     @todo_item.update_attribute(:completed_at, Time.now)
@@ -31,6 +36,6 @@ class TodoItemsController < ApplicationController
     @todo_list = TodoList.find(params[:todo_list_id])
    end
    def todo_item_params
-    params[:todo_item].permit(:content)
+    params[:todo_item].permit(:content, :priority, :duedate)
    end
    end
